@@ -29,15 +29,7 @@
     </form>
 
     <script>
-        document.getElementById("rdpForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-
-            var server = document.getElementById("server").value;
-            var username = document.getElementById("username").value;
-            var password = document.getElementById("password").value;
-            var rdpFileName = document.getElementById("rdpFileName").value;
-            var protocol = document.getElementById("protocol").value;
-
+        function generateRdpContent(server, username, password, protocol) {
             var rdpContent = "full address:s:" + server + "\n";
             rdpContent += "username:s:" + username + "\n";
             rdpContent += "password 51:b:" + btoa(password) + "\n";
@@ -51,14 +43,32 @@
             rdpContent += "redirectposdevices:i:0\n";
             rdpContent += "redirectcomports:i:0\n";
             rdpContent += "redirectsmartcards:i:0\n";
+            return rdpContent;
+        }
 
+        function downloadRdpFile(rdpContent, rdpFileName) {
             var blob = new Blob([rdpContent], {type: "text/plain"});
             var url = URL.createObjectURL(blob);
 
             var a = document.createElement("a");
             a.href = url;
             a.download = rdpFileName + ".rdp";
+            document.body.appendChild(a);
             a.click();
+            document.body.removeChild(a);
+        }
+
+        document.getElementById("rdpForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            var server = document.getElementById("server").value;
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+            var rdpFileName = document.getElementById("rdpFileName").value;
+            var protocol = document.getElementById("protocol").value;
+
+            var rdpContent = generateRdpContent(server, username, password, protocol);
+            downloadRdpFile(rdpContent, rdpFileName);
         });
 
         window.onload = function() {
@@ -70,29 +80,8 @@
             const protocol = urlParams.get('protocol');
 
             if (server && username && password && rdpFileName && protocol) {
-                var rdpContent = "full address:s:" + server + "\n";
-                rdpContent += "username:s:" + username + "\n";
-                rdpContent += "password 51:b:" + btoa(password) + "\n";
-                rdpContent += "protocol:i:" + (protocol === "tcp" ? "0" : "1") + "\n";
-                rdpContent += "singlemon:i:1\n";
-                rdpContent += "desktopwidth:i:1280\n";
-                rdpContent += "desktopheight:i:960\n";
-                rdpContent += "smart sizing:i:0\n";
-                rdpContent += "keyboardhook:i:2\n";
-                rdpContent += "audiomode:i:2\n";
-                rdpContent += "redirectposdevices:i:0\n";
-                rdpContent += "redirectcomports:i:0\n";
-                rdpContent += "redirectsmartcards:i:0\n";
-
-                var blob = new Blob([rdpContent], {type: "text/plain"});
-                var url = URL.createObjectURL(blob);
-
-                var a = document.createElement("a");
-                a.href = url;
-                a.download = rdpFileName + ".rdp";
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
+                var rdpContent = generateRdpContent(server, username, password, protocol);
+                downloadRdpFile(rdpContent, rdpFileName);
             }
         }
     </script>
