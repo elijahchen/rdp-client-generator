@@ -35,9 +35,14 @@
             rdpContent += "password 51:b:" + btoa(password) + "\n";
             rdpContent += "protocol:i:" + (protocol === "tcp" ? "0" : "1") + "\n";
             rdpContent += "singlemon:i:1\n";
+            rdpContent += "screen mode id:i:2\n";
             rdpContent += "desktopwidth:i:1280\n";
             rdpContent += "desktopheight:i:960\n";
-            rdpContent += "smart sizing:i:0\n";
+            rdpContent += "session bpp:i:16\n";
+            rdpContent += "disable wallpaper:i:1\n";
+            rdpContent += "disable full window drag:i:1\n";
+            rdpContent += "disable menu anims:i:1\n";
+            rdpContent += "disable themes:i:1\n";
             rdpContent += "keyboardhook:i:2\n";
             rdpContent += "audiomode:i:2\n";
             rdpContent += "redirectposdevices:i:0\n";
