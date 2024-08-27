@@ -85,6 +85,12 @@
             const protocol = urlParams.get('protocol');
 
             if (server && username && password && rdpFileName && protocol) {
+                document.getElementById("server").value = server;
+                document.getElementById("username").value = username;
+                document.getElementById("password").value = password;
+                document.getElementById("rdpFileName").value = rdpFileName;
+                document.getElementById("protocol").value = protocol;
+                
                 var rdpContent = generateRdpContent(server, username, password, protocol);
                 downloadRdpFile(rdpContent, rdpFileName);
             }
