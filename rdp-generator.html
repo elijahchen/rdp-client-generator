@@ -13,8 +13,6 @@
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required><br><br>
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br><br>
 
         <label for="rdpFileName">RDP File Name:</label>
         <input type="text" id="rdpFileName" name="rdpFileName" required><br><br>
@@ -32,10 +30,9 @@
     </form>
 
     <script>
-        function generateRdpContent(server, username, password, protocol, port) {
+        function generateRdpContent(server, username, protocol, port) {
             var rdpContent = "full address:s:" + server + ":" + port + "\n";
             rdpContent += "username:s:" + username + "\n";
-            rdpContent += "password 51:b:" + btoa(password) + "\n";
             rdpContent += "protocol:i:" + (protocol === "tcp" ? "0" : "1") + "\n";
             rdpContent += "singlemon:i:1\n";
             rdpContent += "screen mode id:i:2\n";
@@ -71,12 +68,11 @@
 
             var server = document.getElementById("server").value;
             var username = document.getElementById("username").value;
-            var password = document.getElementById("password").value;
             var rdpFileName = document.getElementById("rdpFileName").value;
             var protocol = document.getElementById("protocol").value;
             var port = document.getElementById("port").value;
 
-            var rdpContent = generateRdpContent(server, username, password, protocol, port);
+            var rdpContent = generateRdpContent(server, username, protocol, port);
             downloadRdpFile(rdpContent, rdpFileName);
         });
 
@@ -84,20 +80,18 @@
             const urlParams = new URLSearchParams(window.location.search);
             const server = urlParams.get('server');
             const username = urlParams.get('username');
-            const password = urlParams.get('password');
             const rdpFileName = urlParams.get('rdpFileName');
             const protocol = urlParams.get('protocol');
             const port = urlParams.get('port') || "3389";
 
-            if (server && username && password && rdpFileName && protocol) {
+            if (server && username && rdpFileName && protocol) {
                 document.getElementById("server").value = server;
                 document.getElementById("username").value = username;
-                document.getElementById("password").value = password;
                 document.getElementById("rdpFileName").value = rdpFileName;
                 document.getElementById("protocol").value = protocol;
                 document.getElementById("port").value = port;
                 
-                var rdpContent = generateRdpContent(server, username, password, protocol, port);
+                var rdpContent = generateRdpContent(server, username, protocol, port);
                 downloadRdpFile(rdpContent, rdpFileName);
             }
         }
