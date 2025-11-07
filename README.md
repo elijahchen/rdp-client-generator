@@ -4,23 +4,59 @@ This guide explains how to use the `rdp-generator.html` file from the [rdp-clien
 
 ## How to Use the HTML File
 
-### 1. Open the HTML File
-Open the `rdp-generator.html` file in any modern web browser. This file serves as the interface for generating your RDP client configuration.
+### Method 1: Manual Form Entry
 
-### 2. Fill in the Form
-Input the necessary details in the form provided in the HTML file:
+1. **Open the HTML File**: Open the `rdp-generator.html` file in any modern web browser.
 
-- **Server**: The address of the server you wish to connect to.
-- **Username**: Your username for the RDP session.
-- **Password**: Your password for the RDP session.
-- **RDP File Name**: The name you want for the generated RDP file.
-- **Protocol**: Select between TCP and UDP. UDP is recommended for better performance, but your experience may vary.
+2. **Fill in the Form**: Input the necessary details:
+   - **Server** (required): The address of the server you wish to connect to
+   - **Username** (required): Your username for the RDP session
+   - **RDP File Name** (required): The name you want for the generated RDP file
+   - **Protocol**: Select between TCP (default) and UDP. UDP may offer better performance, but experience may vary
+   - **Port**: The RDP port (defaults to 3389)
 
-### 3. Generate the Client
-Click the "Generate Client" button after filling in the form. The JavaScript in the HTML file will process your inputs and create an RDP file.
+3. **Generate the Client**: Click the "Generate Client" button. The browser will automatically download the RDP file.
 
-### 4. Download the RDP File
-The browser will automatically download the RDP file with your specified name once the client is generated.
+### Method 2: URL Parameters (Click-to-Download)
+
+You can pre-fill the form or automatically download an RDP file by passing parameters in the URL. This is perfect for creating shareable links.
+
+**Minimum Required Parameters:**
+- `server` - The RDP server address
+- `username` - The username for the RDP session
+
+**Optional Parameters:**
+- `rdpFileName` or `filename` - Custom name for the RDP file (defaults to server name)
+- `protocol` - Either `tcp` or `udp` (defaults to `tcp`)
+- `port` - The RDP port (defaults to `3389`)
+- `autoDownload` or `auto` - Set to `false` or `0` to pre-fill form without auto-downloading
+
+**Example URLs:**
+
+Basic auto-download (minimal parameters):
+```
+file:///path/to/rdp-generator.html?server=example.com&username=john
+```
+
+Full parameters with custom settings:
+```
+file:///path/to/rdp-generator.html?server=remote.company.com&username=john.doe&filename=work-pc&protocol=udp&port=3389
+```
+
+Pre-fill form without auto-downloading:
+```
+file:///path/to/rdp-generator.html?server=example.com&username=john&autoDownload=false
+```
+
+Custom port example:
+```
+file:///path/to/rdp-generator.html?server=192.168.1.100&username=admin&port=3390
+```
+
+**When hosted on a web server, replace `file:///path/to/` with your server URL:**
+```
+https://example.com/rdp-generator.html?server=remote.example.com&username=john
+```
 
 ## Making a URL Request
 
@@ -33,16 +69,21 @@ The process of generating the RDP file is handled entirely client-side by the Ja
 
 This method does not involve an HTTP URL request to a server; the entire process occurs within the browser.
 
-## Example URL Format
+## RDP File Configuration
 
-While the `rdp-generator.html` file does not generate a server-based URL for the RDP file, if it were to do so, the URL might look something like this:
+The generated RDP file includes optimized settings for performance:
 
-http://example.com/generate-rdp?server=your_server&username=your_username&password=your_password&rdpFileName=your_file_name&protocol=tcp
+- **Resolution**: 1280x960 with smart sizing enabled
+- **Color Depth**: 16-bit for reduced bandwidth
+- **Visual Effects**: Disabled (wallpaper, window dragging, animations, themes) for better performance
+- **Audio**: Disabled by default
+- **Device Redirection**: COM ports, smart cards, and POS devices are disabled
+- **Multi-monitor**: Configured for single monitor use
 
-- `your_server` would be replaced with the server address.
-- `your_username` with your username.
-- `your_password` with your password (I would discourage filling this out unless you know the implications).
-- `your_file_name` with the desired name for the RDP file.
-- `protocol` can be either `tcp` or `udp`.
+These settings prioritize performance and reduced bandwidth usage, making it ideal for remote connections over various network conditions.
 
-Please note that there are some parameters in the html file that forces certain behavior, such as restricting the resolution and multi-monitor support.
+## Security Considerations
+
+- **No Password Storage**: This generator does NOT include password fields. Passwords should never be stored in RDP files.
+- **Client-Side Only**: All processing happens in your browser - no data is sent to any server.
+- **Safe to Share**: URLs with parameters can be safely shared as they don't contain sensitive credentials.

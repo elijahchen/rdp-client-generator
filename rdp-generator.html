@@ -2,9 +2,53 @@
 <html>
 <head>
     <title>Remote Desktop Client</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        #message {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            display: none;
+        }
+        #message.success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        #message.info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0 15px 0;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        label {
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <h1>Remote Desktop Client</h1>
+    <div id="message"></div>
 
     <form id="rdpForm">
         <label for="server">Server:</label>
@@ -76,23 +120,41 @@
             downloadRdpFile(rdpContent, rdpFileName);
         });
 
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById("message");
+            messageDiv.textContent = text;
+            messageDiv.className = type;
+            messageDiv.style.display = "block";
+        }
+
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             const server = urlParams.get('server');
             const username = urlParams.get('username');
-            const rdpFileName = urlParams.get('rdpFileName');
-            const protocol = urlParams.get('protocol');
+            const rdpFileName = urlParams.get('rdpFileName') || urlParams.get('filename');
+            const protocol = urlParams.get('protocol') || "tcp";
             const port = urlParams.get('port') || "3389";
+            const autoDownload = urlParams.get('autoDownload') || urlParams.get('auto');
 
-            if (server && username && rdpFileName && protocol) {
-                document.getElementById("server").value = server;
-                document.getElementById("username").value = username;
-                document.getElementById("rdpFileName").value = rdpFileName;
+            // If we have at least server and username, populate the form
+            if (server || username) {
+                if (server) document.getElementById("server").value = server;
+                if (username) document.getElementById("username").value = username;
+
+                // Use smart defaults for optional fields
+                const finalRdpFileName = rdpFileName || server || "remote-desktop";
+                document.getElementById("rdpFileName").value = finalRdpFileName;
                 document.getElementById("protocol").value = protocol;
                 document.getElementById("port").value = port;
-                
-                var rdpContent = generateRdpContent(server, username, protocol, port);
-                downloadRdpFile(rdpContent, rdpFileName);
+
+                // Auto-download if we have minimum required params and autoDownload is not 'false'
+                if (server && username && autoDownload !== 'false' && autoDownload !== '0') {
+                    showMessage("Downloading RDP file for " + server + " as " + username + "...", "success");
+                    var rdpContent = generateRdpContent(server, username, protocol, port);
+                    downloadRdpFile(rdpContent, finalRdpFileName);
+                } else if (server && username) {
+                    showMessage("Form pre-filled from URL. Click 'Generate Client' to download.", "info");
+                }
             }
         }
     </script>
